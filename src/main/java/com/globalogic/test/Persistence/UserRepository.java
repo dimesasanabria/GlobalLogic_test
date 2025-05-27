@@ -1,5 +1,9 @@
 package com.globalogic.test.Persistence;
-
+/**
+ * * UserRepository.java
+ * * This interface extends JpaRepository to provide CRUD operations for User entities.
+ * * It includes a custom query method to find a user by their email.
+ */
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

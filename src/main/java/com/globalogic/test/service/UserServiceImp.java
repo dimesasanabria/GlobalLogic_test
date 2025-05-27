@@ -1,7 +1,13 @@
+
 package com.globalogic.test.service;
-
+/**    
+ * * This class implements the UserService interface, providing methods to save a user and retrieve a user by token and ID.
+ * * It uses a UserRepository to interact with the database and a JwtUtil to handle JWT token generation and validation. 
+ * * @author GlobalLogic
+ * * @version 1.0           
+ * * @author dms
+ */
 import java.sql.Timestamp;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +21,12 @@ public class UserServiceImp implements UserService {
 private UserRepository userRepository;
 @Autowired
 private JwtUtil jwtUtil;
+    /**
+     * * saveService Save a user to the database after validating the email and password.
+     * * Generates a JWT token for the user.
+     * * @param usuario The user to be saved.
+     * * @return The user entity.
+     */
     @Override
     public User saveService(User usuario) {
         if(this.userRepository.findUserByEmail(usuario.getEmail()) != null) {
@@ -37,6 +49,9 @@ private JwtUtil jwtUtil;
     }
     /**
      * * @param token
+     * * @param id
+     * * @return Entity User  unquiry   by ID
+     * * This method retrieves a user by their ID and validates the provided JWT token.
      */
     @Override
     public User getUser(String token, Long id) {
@@ -53,7 +68,11 @@ private JwtUtil jwtUtil;
         updateUser(userUpdated);   
         return userFound;       
     }
-
+    /**
+     * * updateUser Update an existing user in the database with the last time  that was inquired.
+     * * @param userUpdated The user entity with updated information.
+     * * @return The updated user entity.
+     */
     public User updateUser(User userUpdated) {
         return this.userRepository.save(userUpdated);
     }

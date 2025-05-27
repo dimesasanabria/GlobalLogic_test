@@ -1,10 +1,11 @@
 package com.globalogic.test.entity;
-
+/**
+ * * Phone.java
+ * * This class represents a Phone entity with fields for id, number, city code, and country code.
+ * * It is annotated with JPA annotations to map it to a database table.
+ */
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.persistence.CascadeType;
@@ -16,9 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,5 +1,8 @@
 package com.globalogic.test.security;
-
+/**  
+ * SecurityConfig.java
+ * This class configures the security settings for the application.
+ */
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;

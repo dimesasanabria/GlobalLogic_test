@@ -1,5 +1,12 @@
 package com.globalogic.test.web;
-
+/**
+ * Controller.java
+ * 
+ * This class is a REST controller for managing user operations.
+ * It provides endpoints to create a user and retrieve a user .
+ * 
+ * @author dms
+ */
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +33,11 @@ public class Controller {
     @Autowired
     private UserService userService;
 
+    /**
+     * postCreateUser Create a new user.
+     * @param usuario
+     * @return
+     */
    @PostMapping
     public ResponseEntity<Object> postCreateUser(@RequestBody User usuario) {
         try {
@@ -38,6 +50,12 @@ public class Controller {
             return new ResponseEntity<>(exceptionList, HttpStatus.BAD_REQUEST);
         }
     }
+    /**
+     * getUser Retrieve a user by ID and token.
+     * @param id
+     * @param token
+     * @return
+     */
     @GetMapping("/{id}/{token}")
     public ResponseEntity<Object> getUser(@PathVariable Long id, @PathVariable String token) {
        try {

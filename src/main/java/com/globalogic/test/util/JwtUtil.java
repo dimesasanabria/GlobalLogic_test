@@ -1,10 +1,10 @@
 package com.globalogic.test.util;
-
+/**  
+ * JwtUtil.java
+ * * This class provides utility methods for generating and validating JWT tokens.
+ */
 import java.util.HashMap;
-
 import org.springframework.stereotype.Component;
-
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,6 +24,11 @@ public class JwtUtil {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+    /**
+     * isTokenExpired Checks if the JWT token is expired.
+     * @param token
+     * @return
+     */
     public boolean isTokenExpired(String token) {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
@@ -37,6 +42,12 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, username);
     }
+    /**
+     * createToken Generates a JWT token with the specified claims and subject.
+     * @param claims
+     * @param subject
+     * @return
+     */
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -46,6 +57,11 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }
+    /**
+     * validateToken Validates the JWT token by checking if it is expired.
+     * @param token
+     * @return
+     */
     public boolean validateToken(String token) {
         return (!isTokenExpired(token));
     }
