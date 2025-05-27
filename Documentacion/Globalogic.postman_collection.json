@@ -1,0 +1,47 @@
+{
+	"info": {
+		"_postman_id": "ff5fcc21-387d-448d-ad4d-81a9d07d04db",
+		"name": "Globalogic",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20740247",
+		"_collection_link": "https://multioferta.postman.co/workspace/Team-Workspace~39a9e055-b2bb-4700-85cc-7a2d3921610d/collection/20740247-ff5fcc21-387d-448d-ad4d-81a9d07d04db?action=share&source=collection_link&creator=20740247"
+	},
+	"item": [
+		{
+			"name": "Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n  \"name\": \"Diego Mesa\", \r\n  \"email\": \"codigo12587@gmail.com\", \r\n  \"password\": \"12587\", \r\n  \"phones\": \r\n        [ \r\n            { \r\n            \"number\": \"7782334010\", \r\n            \"citycode\": 3214722894, \r\n            \"contrycode\": \"+57\" \r\n            }\r\n        ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/usuarios",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUser",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
