@@ -1,5 +1,8 @@
 
 package com.globalogic.test.service;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 /**    
  * * This class implements the UserService interface, providing methods to save a user and retrieve a user by token and ID.
  * * It uses a UserRepository to interact with the database and a JwtUtil to handle JWT token generation and validation. 
@@ -8,6 +11,11 @@ package com.globalogic.test.service;
  * * @author dms
  */
 import java.sql.Timestamp;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +36,7 @@ private JwtUtil jwtUtil;
      * * @return The user entity.
      */
     @Override
-    public User saveService(User usuario) {
+    public User saveService(User usuario) throws Exception{
         if(this.userRepository.findUserByEmail(usuario.getEmail()) != null) {
             throw new RuntimeException("This user already exists");
         }
@@ -44,6 +52,7 @@ private JwtUtil jwtUtil;
         if(!usuario.isValidPassword()){
             throw new RuntimeException("Password must contain between 8 and 12 characters, only two uppercase letter, only one number");   
         }
+        usuario.setPassword(token);new String(usuario.EncryptePassword(), StandardCharsets.UTF_8);
         usuario.setDateCreated(new Timestamp(System.currentTimeMillis()));
         return this.userRepository.save(usuario);
     }

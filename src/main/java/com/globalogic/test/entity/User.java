@@ -5,9 +5,18 @@ package com.globalogic.test.entity;
  * * It is annotated with JPA annotations to map it to a database table.
  */
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -72,5 +81,25 @@ public class User {
         String regex = "^(?=.*[A-Z]{2,2})(?=.*[0-9]{2,2})\\S{8,12}$"; 
         Pattern pattern = Pattern.compile(regex);
         return pattern.matcher(this.password).matches();
+    }
+    public byte[] EncryptePassword() throws RuntimeException{
+        try {
+                String encryptionKeyString =  "0123456789abcdef";
+                byte[] encryptionKeyBytes = encryptionKeyString.getBytes();
+                SecretKey secretKey = new SecretKeySpec(encryptionKeyBytes, "AES");
+                Cipher cipher = Cipher.getInstance("AES");
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                return cipher.doFinal(this.password.getBytes());
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Encryption algorithm not found");
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error during encryption");   
+        }catch (InvalidKeyException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Invalid encryption key");
+        }
+
     }
 }
