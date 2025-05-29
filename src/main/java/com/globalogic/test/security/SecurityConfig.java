@@ -9,19 +9,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
      protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .authorizeRequests()
-            .antMatchers("/api/usuarios/**").permitAll() // Allow access to the user API
+        http.csrf().disable();
+            http.headers().frameOptions().disable();
+            http.authorizeRequests()
+            .antMatchers("/api/usuarios/**").permitAll()
+            .antMatchers("/h2-console/**").permitAll() // Allow access to the user list API
+             // Allow access to the user API
             .anyRequest().authenticated() // Require authentication for any other request
             .and().authorizeRequests();
     }
 } 
-
 
 
