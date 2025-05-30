@@ -1,6 +1,8 @@
 package com.globalogic.test.service;
 
 
+import org.springframework.http.ResponseEntity;
+
 /**     
  * * UserService.java
  *  * This interface defines the contract for user-related operations.
@@ -8,7 +10,7 @@ package com.globalogic.test.service;
 import com.globalogic.test.entity.User;
 
 public interface UserService {
-    public User saveService(User usuario)throws Exception;
+    public ResponseEntity<Object>  saveService(User usuario);
 
-    public User getUser(String token, Long id);
+    public ResponseEntity<Object> getUser(String token, Long id);
 }
