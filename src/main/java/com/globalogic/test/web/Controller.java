@@ -44,7 +44,7 @@ public class Controller {
      * @param token
      * @return
      */
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<Object> getUser() {
                   return userService.getUser();       
     }      
