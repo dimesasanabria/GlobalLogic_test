@@ -18,9 +18,13 @@ import com.globalogic.test.entity.User;
 import com.globalogic.test.exception.ExceptionList;
 import com.globalogic.test.exception.ResponseError;
 import com.globalogic.test.util.JwtUtil;
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 
 @Service
 public class UserServiceImp implements UserService {
@@ -50,7 +54,7 @@ private JwtUtil jwtUtil;
             usuario.setIsActive(true);
             usuario.setToken(token);    
             if(!usuario.isValidPassword()){
-                throw new RuntimeException("Password must contain between 8 and 12 characters, only two uppercase letter, only one number");   
+                throw new RuntimeException("Password must contain between 8 and 12 characters, only one uppercase letter, and  two numbers in any position");   
             }
         usuario.setPassword(new String(usuario.EncryptePassword(), StandardCharsets.UTF_8));
         usuario.setDateCreated(new Timestamp(System.currentTimeMillis()));
@@ -84,16 +88,22 @@ private JwtUtil jwtUtil;
      * * This method retrieves a user by their ID and validates the provided JWT token.
      */
     @Override
-    public ResponseEntity<Object> getUser(String token, Long id) {
-        try {         
-            if (token == null || token.isEmpty()) {
-                throw new RuntimeException("Token is empty");
+    public ResponseEntity<Object> getUser() {
+        try { 
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            String authorizationHeader = request.getHeader("Authorization");
+            System.out.println("Authorization header found: " + authorizationHeader);
+            if (authorizationHeader == null && !authorizationHeader.startsWith("Bearer ")) {
+                throw new RuntimeException("Unauthorized: No token provided or invalid token. Please provide a valid token in the Authorization header.");
             }
-            if (!jwtUtil.validateToken(token)) {
+            if (!jwtUtil.validateToken(authorizationHeader.substring(7))) {
                 throw new RuntimeException("Token is invalid");
             }
-            User userFound =  this.userRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            String email = jwtUtil.extractUsername(authorizationHeader.substring(7));
+            System.out.println("Username from token: " + email);
+            User userFound =  this.userRepository.findUserByEmail(email);
+            if(userFound == null) 
+                throw new RuntimeException("User not found with email: " + email);
             User userUpdated = userFound;
             userUpdated.setLastLogin(new Timestamp(System.currentTimeMillis()));      
             updateUser(userUpdated);   

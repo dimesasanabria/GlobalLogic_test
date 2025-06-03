@@ -12,5 +12,5 @@ import com.globalogic.test.entity.User;
 public interface UserService {
     public ResponseEntity<Object>  saveService(User usuario);
 
-    public ResponseEntity<Object> getUser(String token, Long id);
+    public ResponseEntity<Object> getUser();
 }

@@ -44,8 +44,8 @@ public class Controller {
      * @param token
      * @return
      */
-    @GetMapping("/{id}/{token}")
-    public ResponseEntity<Object> getUser(@PathVariable Long id, @PathVariable String token) {
-                 return userService.getUser(token,id); 
+    @GetMapping("/")
+    public ResponseEntity<Object> getUser() {
+                  return userService.getUser();       
     }      
 }

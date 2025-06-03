@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Set;
 import java.util.regex.Pattern;
-
+import java.util.Arrays;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -77,10 +77,12 @@ public class User {
         if (this.password == null || this.password.isEmpty()) {
             return false;
         }
-        System.err.println("Password: " + this.password);
-        String regex = "^(?=.*[A-Z]{2,2})(?=.*[0-9]{2,2})\\S{8,12}$"; 
+         char tempArray[] = this.password.toCharArray();
+         Arrays.sort(tempArray);
+         String pass = new String(tempArray);
+        String regex = "^(?=.*[A-Z])(?=.*\\d.*\\d)[A-Za-z\\d]{8,12}$"; // At least one uppercase letter, two digits, and 8-12 characters
         Pattern pattern = Pattern.compile(regex);
-        return pattern.matcher(this.password).matches();
+        return pattern.matcher(pass).matches();
     }
     public byte[] EncryptePassword() throws RuntimeException{
         try {
