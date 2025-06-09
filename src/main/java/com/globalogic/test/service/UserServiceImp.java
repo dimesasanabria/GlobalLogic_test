@@ -104,10 +104,14 @@ private JwtUtil jwtUtil;
             User userFound =  this.userRepository.findUserByEmail(email);
             if(userFound == null) 
                 throw new RuntimeException("User not found with email: " + email);
+            //userFound.isTokenUsed(authorizationHeader.substring(7));
+            userFound.setToken(jwtUtil.generateToken(userFound.getEmail()));
+            System.out.println("Generate new token: " + userFound.getToken());
             User userUpdated = userFound;
             userUpdated.setLastLogin(new Timestamp(System.currentTimeMillis()));      
             updateUser(userUpdated);   
-                return new ResponseEntity<>(userFound, HttpStatus.OK);  
+                return new ResponseEntity<>(userFound, HttpStatus.OK);
+
         } catch (ExpiredJwtException e) {
             ResponseError responseError = new ResponseError(e.getMessage(), HttpStatus.UNAUTHORIZED.value());
             ExceptionList exceptionList = new ExceptionList();

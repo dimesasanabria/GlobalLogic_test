@@ -6,23 +6,21 @@
 
 plugins {
     id 'java'
+    id 'jacoco'
     id 'maven-publish'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'org.springframework.boot' version '2.5.14'
-
+    id 'org.springframework.boot' version '2.5.14' 
 }
+
 
 repositories {
-    mavenLocal()
     mavenCentral()
-    maven {
-        url = uri('https://repo.maven.apache.org/maven2/')
-    }
-}
-configurations {
-    providedRuntime
+    maven { url 'https://jitpack.io' }
 }
 
+group = 'com.globalogic.test'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web:2.5.14'
@@ -30,31 +28,36 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.5.14'
     implementation 'org.springframework.boot:spring-boot-starter-security:2.5.14'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.5.14'
     runtimeOnly 'com.h2database:h2:1.4.200'
     compileOnly 'org.springframework.boot:spring-boot-starter-tomcat:2.5.14'
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.14'
+
+
 }
 
-group = 'com.globalogic'
-version = '0.0.1-SNAPSHOT'
-description = 'test'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.required.set(true)
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
     }
+
+
 }
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-tasks.withType(Test) {
-    useJUnitPlatform()
-}
-test{
-    useJUnitPlatform()
-}
+
+

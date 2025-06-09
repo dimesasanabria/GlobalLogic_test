@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-@SpringBootApplication
 @RestController
 @RequestMapping("/api/usuarios")
 public class Controller {
@@ -34,7 +33,7 @@ public class Controller {
      * @return ResponseEntity<Object> containing the created user or an error message.
      * 
      */
-   @PostMapping
+   @PostMapping("/create")
     public ResponseEntity<Object> postCreateUser(@RequestBody User usuario){
       return userService.saveService(usuario);
     }
@@ -44,7 +43,7 @@ public class Controller {
      * @param token
      * @return
      */
-    @GetMapping
+    @GetMapping("/login")
     public ResponseEntity<Object> getUser() {
                   return userService.getUser();       
     }      

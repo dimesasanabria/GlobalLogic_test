@@ -13,14 +13,17 @@ Para construir el proyecto siga las siguinetes instrucciones:
     		3.1.6 web: Contiene el controlador que expone la API con los metodos post y get que permite la creacion y 			   consulta de los usuarios.
 Instrucciones de Ejecucion: 
 4. Para Ejecutar el proyecto siga las siguientes instrucciones:
-  4.1 Precondicion:  Debe tener un ambiente de desarrollo bajo el IDE visual code con los siguientes componentes:
-		tener Instalado la extenciones de Spring boot.
+  4.1 Precondicion:  Debe tener un ambiente de desarrollo bajo el IDE  con los siguientes componentes:
+		tener Instalado la extenciones de Spring boot 2.5.
 		tener instalado JDK  sobre la version 11.0
+		tener instalado Gradle sobre la version 7.4
 		tener configurado el entorno de desarrollo con las extensiones requeridas como lombok, h2, jjwt jpa etc.
-  4.2 Despues de descargado el proyecto en visual code y cumpilado los fuentes abrir la terminal con la ruta donde se 	encuentra el proyecto y ejecutar el siguiente comando: 
-			./mvnw spring-boot:start. 
+  4.2 Despues de descargado el proyecto desde git y cumpilado los fuentes abrir la terminal con la ruta donde se 	encuentra el proyecto y ejecutar el siguiente comando: 
+			./gradlew bootRun  
   4.3 Verificar que el proyecto se publique correctamenete en el servidor 
-  4.3 En la carpeta de documentación encontrara el Proyecto postman "Globalogic.postman_collection" con el metodo de creacion de usuario y consulta de 	usuario. Abrirlo desde postman y ejecutarlo para realizar las pruebas correspondientes.
+  4.3 En la carpeta de documentación encontrara el Proyecto postman "Globalogic.postman_collection" con el metodo de creacion de usuario y consulta de 	usuario. Abrirlo desde postman y ejecutarlo los siguinetes pasoso:
+		4.3.1 Crear Usuario: Ejecutar el metodo post con url:
+		4.3.2
      		 
 Gracias
 Diego Mesa.
