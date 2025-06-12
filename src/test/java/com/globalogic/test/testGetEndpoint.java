@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers; 
@@ -56,5 +57,13 @@ public class TestGetEndpoint {
           this.mockMvc.perform(get("/api/usuarios/login"))
             .andDo(print())
          .andExpect(status().isOk());
+       }
+
+       @Test
+     public void testGetUserAnswer() throws Exception {
+          this.mockMvc.perform(get("/api/usuarios/login"))
+            .andDo(print())
+         .andExpect(status().isOk())
+         .andReturn().getResponse().getContentAsString();         
        }
 }
