@@ -1,8 +1,8 @@
-package com.globalogic.test.security;
+/**package com.globalogic.test.security;
 /**  
  * SecurityConfig.java
  * This class configures the security settings for the application.
- */
+ 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
             http.headers().frameOptions().disable();
             http.authorizeRequests()
+            .antMatchers("/**").permitAll()
             .antMatchers("/api/usuarios/**").permitAll()
             .antMatchers("/h2-console/**").permitAll() // Allow access to the user list API
              // Allow access to the user API
@@ -26,3 +27,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 } 
 
 
+*/

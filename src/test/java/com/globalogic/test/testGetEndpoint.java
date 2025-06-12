@@ -1,5 +1,4 @@
-package test.java.com.globalogic.test;
-
+package com.globalogic.test;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -8,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import com.globalogic.test.entity.User;
@@ -22,42 +22,39 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers; 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 import com.globalogic.test.web.Controller;
-//@SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(Controller.class)
-public class testGetEndpoint {
+@SpringBootTest
+@AutoConfigureMockMvc  
+//@WebMvcTest(Controller.class)
+//@Import(ManualScanConfig.class)
+public class TestGetEndpoint {
  
     @Autowired
-       private MockMvc mockMvc;
-
-   @MockBean
-    private UserService userService;    
+        MockMvc mockMvc;
+    
+    @MockBean
+    private UserService userService;
 
    @Test
    public void testAddUserTest() throws Exception {
-       when(userService.saveService(any(User.class)))
+
+        when(userService.saveService(any(User.class)))
             .thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
-   //   String requets = "{\"name\": \"Diego Mesa\",\"email\": \"codigo7267911@gmail.com\",\"password\": \"a2asffAdfdf4\"}";
+
+      String requets = "{\"name\": \"Diego Mesa\",\"email\": \"codigo7267911@gmail.com\",\"password\": \"a2asffAdfdf4\"}";
       //   String requets = "";   
-     // this.mockMvc.perform(post("/api/usuarios")
-      //  .contentType(MediaType.APPLICATION_JSON)
-            //.content(mapper.writeValueAsString(user)))
-      //   .content(requets))
-      //   .andExpect(status().isCreated());
-        
+        this.mockMvc.perform(post("/api/usuarios/create")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(requets))
+                  .andExpect(status().isCreated())
+                  .andDo(print()) ;
        }
-   /**     
       @Test
      public void testGetUser() throws Exception {
-          this.mockMvc.perform(get("/api/usuarios"))
+          this.mockMvc.perform(get("/api/usuarios/login"))
             .andDo(print())
          .andExpect(status().isOk());
-       //  .andExpect(content().string(containsString("Diego")));
-     */     
-   // .andExpect(jsonPath("$[0].name").value("Diego"));  this.mockMvc.perform(get("/api/usuarios")).andDo(print()).
-   //         andExpect(status().isOk());
-       //}
+       }
 }
