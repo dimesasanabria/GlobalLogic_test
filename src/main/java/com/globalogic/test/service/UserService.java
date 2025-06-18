@@ -1,6 +1,7 @@
 package com.globalogic.test.service;
 
-
+import com.globalogic.test.dto.UserDto;
+import com.globalogic.test.dto.UserMapper;    
 import org.springframework.http.ResponseEntity;
 
 /**     
@@ -10,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import com.globalogic.test.entity.User;
 
 public interface UserService {
-    public ResponseEntity<Object>  saveService(User usuario);
+    public ResponseEntity<Object>  saveService(UserDto usuario);
 
-    public ResponseEntity<Object> getUser();
+    public ResponseEntity<Object> getUser(String authorizationHeader);
 }

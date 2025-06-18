@@ -1,13 +1,18 @@
-/**package com.globalogic.test.security;
-/**  
- * SecurityConfig.java
- * This class configures the security settings for the application.
- 
+
+package com.globalogic.test.security;
+  
+import java.beans.BeanProperty;
+
+// SecurityConfig.java
+// This class configures the security settings for the application.
+    
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; 
+import org.springframework.context.annotation.Bean;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +29,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated() // Require authentication for any other request
             .and().authorizeRequests();
     }
-} 
-
-
-*/
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}

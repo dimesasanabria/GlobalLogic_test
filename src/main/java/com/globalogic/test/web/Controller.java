@@ -7,8 +7,6 @@ package com.globalogic.test.web;
  * 
  * @author dms
  */
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import com.globalogic.test.dto.UserDto;
+
 @RestController
 @RequestMapping("/api/usuarios")
 public class Controller {
@@ -34,7 +35,7 @@ public class Controller {
      * 
      */
    @PostMapping("/create")
-    public ResponseEntity<Object> postCreateUser(@RequestBody User usuario){
+    public ResponseEntity<Object> postCreateUser(@RequestBody UserDto usuario){
       return userService.saveService(usuario);
     }
     /**
@@ -44,7 +45,7 @@ public class Controller {
      * @return
      */
     @GetMapping("/login")
-    public ResponseEntity<Object> getUser() {
-                  return userService.getUser();       
+    public ResponseEntity<Object> getUser(@RequestHeader("Authorization") String authorizationHeader) {
+                  return userService.getUser(authorizationHeader);       
     }      
 }

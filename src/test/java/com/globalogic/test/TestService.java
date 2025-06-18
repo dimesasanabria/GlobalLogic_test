@@ -1,21 +1,88 @@
-package com.globalogic.test.web;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+package com.globalogic.test;
+
+import com.globalogic.test.service.UserServiceImp;
 import com.globalogic.test.entity.User;
 import com.globalogic.test.service.UserService;
-public class TestService {
+import com.globalogic.test.service.UserServiceImp;
+import com.globalogic.test.persistence.UserRepository;
+import com.globalogic.test.TestPersistence;
+import com.globalogic.test.dto.UserDto;
+import com.globalogic.test.dto.UserMapper;
+import org.mockito.InjectMocks;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import com.globalogic.test.exception.ExceptionUserAlreadyExists;
+import com.globalogic.test.exception.ExceptionFormatEmail;
+import com.globalogic.test.exception.ExceptionList;
+import com.globalogic.test.exception.ExceptionInvalidPassword;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.MockitoAnnotations;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
+import org.springframework.security.core.Authentication;
+import java.sql.Timestamp;
+import java.util.Optional;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-    private final UserService service;
 
-    public TestService(UserService service) {
-        this.service = service;
+@SpringBootTest
+@AutoConfigureMockMvc 
+public class TestService {    
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private UserServiceImp userServicesIn;
+    
+    @MockBean
+    private UserRepository userRepository;
+    
+    @BeforeEach
+    void setUp() {
+        // Initialize mocks and inject them
+        MockitoAnnotations.openMocks(this);
     }
 
-    @RequestMapping("/api/usuarios")
-    @ResponseBody
-    public Object getUser() {
-        return (Object)this.service.getUser();
+    @Test
+    public void testgetUser() {
+        UserDto userdto;
+        UserDto dtoUser = new UserDto();
+        dtoUser.setName("Diego M");
+        dtoUser.setEmail("codigo726778@gmail.com");
+        dtoUser.setPassword("Password123");
+        dtoUser.setIsActive(true);
+        dtoUser.setDateCreated(new Timestamp(System.currentTimeMillis()));
+        System.out.println("DTO: " + dtoUser);
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setName(dtoUser.getName());
+        savedUser.setEmail(dtoUser.getEmail());
+        savedUser.setPassword(dtoUser.getPassword());
+        savedUser.setIsActive(dtoUser.getIsActive());
+        savedUser.setDateCreated(dtoUser.getDateCreated());
+       //Create user
+        ResponseEntity<Object> uss = userServicesIn.saveService(dtoUser);
+        Authentication authentication = mock(Authentication.class);
+        // Mock the repository
+        when(userRepository.findUserByEmail(dtoUser.getEmail())).thenReturn(Optional.of(savedUser)); 
+        when(authentication.getCredentials()).thenReturn("Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk");        
+        // Execute
+        String token = (String) authentication.getCredentials();
+        ResponseEntity<Object> result = userServicesIn.getUser(token);
+        assertNotNull(result);
+        assertTrue(result.getBody() instanceof ExceptionList);
+      //  ExceptionList resultDto = (ExceptionList) result.getBody();
+       // assertEquals("JWT expired at 2025-06-17T05:49:54Z. Current time: 2025-06-18T05:37:08Z, a difference of 85634743 milliseconds.  Allowed clock skew: 0 milliseconds.", resultDto.getErrors().get(0).getDetail());
+
     }
 
 }
