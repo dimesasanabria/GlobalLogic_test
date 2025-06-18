@@ -80,8 +80,6 @@ public class TestService {
         ResponseEntity<Object> result = userServicesIn.getUser(token);
         assertNotNull(result);
         assertTrue(result.getBody() instanceof ExceptionList);
-      //  ExceptionList resultDto = (ExceptionList) result.getBody();
-       // assertEquals("JWT expired at 2025-06-17T05:49:54Z. Current time: 2025-06-18T05:37:08Z, a difference of 85634743 milliseconds.  Allowed clock skew: 0 milliseconds.", resultDto.getErrors().get(0).getDetail());
 
     }
 
