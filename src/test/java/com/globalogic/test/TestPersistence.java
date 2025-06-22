@@ -1,9 +1,9 @@
 package com.globalogic.test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import com.globalogic.test.entity.User;
 import java.sql.Timestamp;
 import java.util.Optional;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import com.globalogic.test.exception.ExceptionDataNotFound;
 import com.globalogic.test.persistence.UserRepository;
 import com.globalogic.test.service.UserService;

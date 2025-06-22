@@ -36,7 +36,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
-
+import com.globalogic.test.util.JwtUtil;
 
 
 @Service
@@ -84,16 +84,22 @@ private final PasswordEncoder passwordEncoder;
             }
             // Convert UserDto to User entity
             User usuario = UserMapper.toEntity(usuarioDto);
+            System.out.println("User before: " + usuario);
             String token = jwtUtil.generateToken(usuario.getEmail());
             if(token == null || token.isEmpty()) {
                 throw new ExceptionTokenInvalid("Error generating token");
             }
             usuario.setIsActive(true);
             usuario.setToken(token);    
-        //    usuario.setPassword(new String(usuario.EncryptePassword(), StandardCharsets.UTF_8));
         usuario.setPassword(passwordEncoder.encode(usuarioDto.getPassword()));
-        usuario.setDateCreated(new Timestamp(System.currentTimeMillis()));    
-        return new ResponseEntity<>(UserMapper.toDto(this.userRepository.save(usuario)),HttpStatus.CREATED);    
+        usuario.setDateCreated(new Timestamp(System.currentTimeMillis()));
+        return new ResponseEntity<>(UserMapper.toDto(this.userRepository.save(usuario)),HttpStatus.CREATED);
+        
+        } catch (ExpiredJwtException e) {
+            ResponseError responseError = new ResponseError(e.getMessage(), HttpStatus.UNAUTHORIZED.value());
+            ExceptionList exceptionList = new ExceptionList();
+            exceptionList.addError(responseError);
+            return new ResponseEntity<>(exceptionList, HttpStatus.UNAUTHORIZED);    
         }catch (RuntimeException er){
             er.printStackTrace();    
             if(er.getMessage() == null || er.getMessage().isEmpty()) {
@@ -144,7 +150,7 @@ private final PasswordEncoder passwordEncoder;
             System.out.println("Generate new token: " + userFound.getToken());
             User userUpdated = userFound;
             userUpdated.setLastLogin(new Timestamp(System.currentTimeMillis()));      
-            updateUser(userUpdated);               
+            updateUser(userUpdated);              
             return new ResponseEntity<>(UserMapper.toDto(userFound), HttpStatus.OK);
 
         } catch (ExpiredJwtException e) {

@@ -8,6 +8,7 @@ import com.globalogic.test.exception.ExceptionDataNotFound;
 import com.globalogic.test.persistence.UserRepository;
 import com.globalogic.test.service.UserService;
 import com.globalogic.test.service.UserServiceImp;
+import com.globalogic.test.util.JwtUtil;
 import com.globalogic.test.dto.UserDto;
 import com.globalogic.test.dto.UserMapper;
 import org.mockito.InjectMocks;
@@ -32,6 +33,8 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import com.globalogic.test.util.JwtUtil;
+import org.mockito.Mock;
 
 @SpringBootTest
 @AutoConfigureMockMvc 
@@ -42,9 +45,12 @@ public class TestExceptions {
     private UserServiceImp userService;
     @InjectMocks
     private UserServiceImp userServicesIn;
- 
     @MockBean
     private UserRepository userRepository;
+    @Mock
+    private JwtUtil jwtUtil;
+    
+
     
      @BeforeEach
     void setUp() {
@@ -80,7 +86,7 @@ public class TestExceptions {
     }
 
     @Test
-    public void testExceptionBadRequest() {
+    public void testExceptionGenerateToken() {
         UserDto dtoUser = new UserDto();
         dtoUser.setName("Diego M");
         dtoUser.setEmail("codigo7267911@gmail.com");
@@ -96,18 +102,19 @@ public class TestExceptions {
         savedUser.setIsActive(dtoUser.getIsActive());
         savedUser.setDateCreated(dtoUser.getDateCreated());
             // Mock the repository
+            
        when(userRepository.save(savedUser)).thenReturn(savedUser);
             // Execute
         ResponseEntity<Object> response = userServicesIn.saveService(dtoUser);
+        System.out.println("ResponseBadRequest: " + response);
         Object result = response.getBody();
-     
             // Validate
         assertNotNull(result);
         assertTrue(result instanceof ExceptionList);
         ExceptionList resultDto = (ExceptionList) result;
-        assertEquals("Parameters incorrects in the request", resultDto.getErrors().get(0).getDetail());
+        assertEquals("Error generating token", resultDto.getErrors().get(0).getDetail());
     }
-
+    @Test
     public void testExceptionInvalidPassword() {
         UserDto dtoUser = new UserDto();
         dtoUser.setName("Diego M");
@@ -119,7 +126,7 @@ public class TestExceptions {
         when(userService.saveService(dtoUser))
         .thenThrow(new ExceptionInvalidPassword("Password must contain between 8 and 12 characters, only one uppercase letter, and  two numbers in any position"));
     }
-
+    @Test
      public void testExceptionInvalidToken() {
         UserDto dtoUser = new UserDto();
         Authentication authentication = mock(Authentication.class);
@@ -128,6 +135,68 @@ public class TestExceptions {
         String token = (String) authentication.getCredentials();
         when(userService.getUser(token))
         .thenThrow(new ExceptionInvalidPassword("Unauthorized: No token provided or invalid token. Please provide a valid token in the Authorization header."));
+    }
+
+      @Test
+    public void ExceptionInvalidToken() {
+        UserDto dtoUser = new UserDto();
+        dtoUser.setName("Diego M");
+        dtoUser.setEmail("codigo726778@gmail.com");
+        dtoUser.setPassword("Password123");
+        dtoUser.setIsActive(true);
+        dtoUser.setDateCreated(new Timestamp(System.currentTimeMillis()));
+        System.out.println("DTO: " + dtoUser);
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setName(dtoUser.getName());
+        savedUser.setEmail(dtoUser.getEmail());
+        savedUser.setPassword(dtoUser.getPassword());
+        savedUser.setIsActive(dtoUser.getIsActive());
+        savedUser.setDateCreated(dtoUser.getDateCreated());
+        Authentication authentication = mock(Authentication.class);
+        // Mock the repository
+        when(authentication.getCredentials()).thenReturn("Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk");        
+        // Execute
+        String token = (String) authentication.getCredentials();
+        when(userRepository.findUserByEmail(savedUser.getEmail())).thenReturn(Optional.of(savedUser));
+        ResponseEntity<Object> result = userServicesIn.getUser(token);
+        assertNotNull(result);
+        assertTrue(result.getBody() instanceof ExceptionList);
+        ExceptionList resultDto = (ExceptionList) result.getBody();
+        assertEquals("Token is invalid", resultDto.getErrors().get(0).getDetail());
+    }
+
+        @Test
+        public void ExceptionTokenExtractEmail() {
+            UserDto dtoUser = new UserDto();
+            dtoUser.setName("Diego M");
+            dtoUser.setEmail("codigoww26778@gmail.com");
+            dtoUser.setPassword("Password123");
+            dtoUser.setIsActive(true);
+            dtoUser.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            System.out.println("DTO: " + dtoUser);
+            User savedUser = new User();
+            savedUser.setId(1L);
+            savedUser.setName(dtoUser.getName());
+            savedUser.setEmail(dtoUser.getEmail());
+            savedUser.setPassword(dtoUser.getPassword());
+            savedUser.setIsActive(dtoUser.getIsActive());
+            savedUser.setDateCreated(dtoUser.getDateCreated());
+            Authentication authentication = mock(Authentication.class);
+            // Mock the repository
+            when(authentication.getCredentials()).thenReturn("Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk");        
+            // Execute
+            String token = (String) authentication.getCredentials();
+            //when(userRepository.findUserByEmail(savedUser.getEmail())).thenReturn(Optional.of(savedUser));
+            when(jwtUtil.validateToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk")).thenReturn(true);        
+            when(jwtUtil.extractUsername("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk")).thenReturn(savedUser.getEmail());
+            when(jwtUtil.generateToken(savedUser.getEmail())).thenReturn("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk");
+            ResponseEntity<Object> result = userServicesIn.getUser(token);
+            System.out.println("result: " + result); 
+            assertNotNull(result);
+            assertTrue(result.getBody() instanceof ExceptionList);
+            ExceptionList resultDto = (ExceptionList) result.getBody();
+            assertEquals("User not found with email: codigoww26778@gmail.com", resultDto.getErrors().get(0).getDetail());
     }
 
 }
