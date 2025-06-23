@@ -56,16 +56,16 @@ jacocoTestReport {
 }
 test{
         finalizedBy jacocoTestReport
-         testLogging {
-        events "passed", "skipped", "failed", "standardOut", "standardError"
-        showStandardStreams = true
-        }
+    //     testLogging {
+     //   events "passed", "skipped", "failed", "standardOut", "standardError"
+     //   showStandardStreams = true
+     //   }
     }
 jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.60
+                minimum = 0.75
             }
         }
     }

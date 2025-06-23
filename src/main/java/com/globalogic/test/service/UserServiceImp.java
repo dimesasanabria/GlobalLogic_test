@@ -91,15 +91,9 @@ private final PasswordEncoder passwordEncoder;
             }
             usuario.setIsActive(true);
             usuario.setToken(token);    
-        usuario.setPassword(passwordEncoder.encode(usuarioDto.getPassword()));
-        usuario.setDateCreated(new Timestamp(System.currentTimeMillis()));
-        return new ResponseEntity<>(UserMapper.toDto(this.userRepository.save(usuario)),HttpStatus.CREATED);
-        
-        } catch (ExpiredJwtException e) {
-            ResponseError responseError = new ResponseError(e.getMessage(), HttpStatus.UNAUTHORIZED.value());
-            ExceptionList exceptionList = new ExceptionList();
-            exceptionList.addError(responseError);
-            return new ResponseEntity<>(exceptionList, HttpStatus.UNAUTHORIZED);    
+            usuario.setPassword(passwordEncoder.encode(usuarioDto.getPassword()));
+            usuario.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            return new ResponseEntity<>(UserMapper.toDto(this.userRepository.save(usuario)),HttpStatus.CREATED);        
         }catch (RuntimeException er){
             er.printStackTrace();    
             if(er.getMessage() == null || er.getMessage().isEmpty()) {

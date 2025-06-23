@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.globalogic.test.util.JwtUtil;
 import org.mockito.Mock;
+import io.jsonwebtoken.ExpiredJwtException;
 
 @SpringBootTest
 @AutoConfigureMockMvc 
@@ -81,8 +82,16 @@ public class TestExceptions {
         dtoUser.setIsActive(true);
         dtoUser.setDateCreated(new Timestamp(System.currentTimeMillis()));
         System.out.println("DTO: " + dtoUser);
-        when(userService.saveService(dtoUser))
-        .thenThrow(new ExceptionFormatEmail("The format Email is invalid"));
+     //   when(userService.saveService(dtoUser))
+     //   .thenThrow(new ExceptionFormatEmail("The format Email is invalid"));
+        ResponseEntity<Object> response = userServicesIn.saveService(dtoUser);
+        System.out.println("ResponseBadRequest: " + response);
+        Object result = response.getBody();
+            // Validate
+        assertNotNull(result);
+        assertTrue(result instanceof ExceptionList);
+        ExceptionList resultDto = (ExceptionList) result;
+        assertEquals("The format Email is invalid", resultDto.getErrors().get(0).getDetail());
     }
 
     @Test
@@ -130,11 +139,14 @@ public class TestExceptions {
      public void testExceptionInvalidToken() {
         UserDto dtoUser = new UserDto();
         Authentication authentication = mock(Authentication.class);
-        when(authentication.getCredentials()).thenReturn("Bearer ");        
+        //when(authentication.getCredentials()).thenReturn("");        
         // Execute
         String token = (String) authentication.getCredentials();
-        when(userService.getUser(token))
-        .thenThrow(new ExceptionInvalidPassword("Unauthorized: No token provided or invalid token. Please provide a valid token in the Authorization header."));
+        ResponseEntity<Object> result = userServicesIn.getUser(token);
+        assertNotNull(result);
+        assertTrue(result.getBody() instanceof ExceptionList);
+        ExceptionList resultDto = (ExceptionList) result.getBody();
+        assertEquals("Unauthorized: No token provided or invalid token. Please provide a valid token in the Authorization header.", resultDto.getErrors().get(0).getDetail());
     }
 
       @Test
@@ -166,37 +178,57 @@ public class TestExceptions {
         assertEquals("Token is invalid", resultDto.getErrors().get(0).getDetail());
     }
 
-        @Test
-        public void ExceptionTokenExtractEmail() {
-            UserDto dtoUser = new UserDto();
-            dtoUser.setName("Diego M");
-            dtoUser.setEmail("codigoww26778@gmail.com");
-            dtoUser.setPassword("Password123");
-            dtoUser.setIsActive(true);
-            dtoUser.setDateCreated(new Timestamp(System.currentTimeMillis()));
-            System.out.println("DTO: " + dtoUser);
-            User savedUser = new User();
-            savedUser.setId(1L);
-            savedUser.setName(dtoUser.getName());
-            savedUser.setEmail(dtoUser.getEmail());
-            savedUser.setPassword(dtoUser.getPassword());
-            savedUser.setIsActive(dtoUser.getIsActive());
-            savedUser.setDateCreated(dtoUser.getDateCreated());
-            Authentication authentication = mock(Authentication.class);
+    @Test
+    public void ExceptionTokenExtractEmail() {
+        UserDto dtoUser = new UserDto();
+        dtoUser.setName("Diego M");
+        dtoUser.setEmail("codigoww26778@gmail.com");
+        dtoUser.setPassword("Password123");
+        dtoUser.setIsActive(true);
+        dtoUser.setDateCreated(new Timestamp(System.currentTimeMillis()));
+        System.out.println("DTO: " + dtoUser);
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setName(dtoUser.getName());
+        savedUser.setEmail(dtoUser.getEmail());
+        savedUser.setPassword(dtoUser.getPassword());
+        savedUser.setIsActive(dtoUser.getIsActive());
+        savedUser.setDateCreated(dtoUser.getDateCreated());
+        Authentication authentication = mock(Authentication.class);
             // Mock the repository
-            when(authentication.getCredentials()).thenReturn("Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk");        
+        when(authentication.getCredentials()).thenReturn("Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk");        
             // Execute
-            String token = (String) authentication.getCredentials();
+        String token = (String) authentication.getCredentials();
             //when(userRepository.findUserByEmail(savedUser.getEmail())).thenReturn(Optional.of(savedUser));
-            when(jwtUtil.validateToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk")).thenReturn(true);        
-            when(jwtUtil.extractUsername("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk")).thenReturn(savedUser.getEmail());
-            when(jwtUtil.generateToken(savedUser.getEmail())).thenReturn("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk");
-            ResponseEntity<Object> result = userServicesIn.getUser(token);
-            System.out.println("result: " + result); 
-            assertNotNull(result);
-            assertTrue(result.getBody() instanceof ExceptionList);
-            ExceptionList resultDto = (ExceptionList) result.getBody();
-            assertEquals("User not found with email: codigoww26778@gmail.com", resultDto.getErrors().get(0).getDetail());
+        when(jwtUtil.validateToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk")).thenReturn(true);        
+        when(jwtUtil.extractUsername("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk")).thenReturn(savedUser.getEmail());
+        when(jwtUtil.generateToken(savedUser.getEmail())).thenReturn("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk");
+        ResponseEntity<Object> result = userServicesIn.getUser(token);
+        assertNotNull(result);
+        assertTrue(result.getBody() instanceof ExceptionList);
+        ExceptionList resultDto = (ExceptionList) result.getBody();
+        assertEquals("User not found with email: codigoww26778@gmail.com", resultDto.getErrors().get(0).getDetail());
     }
+
+    @Test
+    public void ExceptionTestgetUser() {
+        UserDto dtoUser = new UserDto();
+        dtoUser.setName("Diego M");
+        dtoUser.setEmail("codigo726778@gmail.com");
+        dtoUser.setPassword("Password123");
+        Authentication authentication = mock(Authentication.class);
+        // Mock the repository
+        when(authentication.getCredentials()).thenReturn("Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb2RpZ283MjY3OTMzMTIyQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE2NDU5NCwiaWF0IjoxNzUwMTYzNjk0fQ.ksiD70BrWFeKNplhKSTi2di5n37_GxYpfZfJ_ngTDYk");        
+        // Execute
+        String token = (String) authentication.getCredentials();
+        when(!jwtUtil.validateToken(token))
+        .thenThrow(new ExpiredJwtException(null, null, "Token is invalid"));    
+        ResponseEntity<Object> result = userServicesIn.getUser(token);
+        System.out.println("result: " + result); 
+        assertNotNull(result);
+        assertTrue(result.getBody() instanceof ExceptionList);
+        ExceptionList resultDto = (ExceptionList) result.getBody();
+        assertEquals("Token is invalid", resultDto.getErrors().get(0).getDetail());
+    }        
 
 }
